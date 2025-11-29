@@ -4,14 +4,16 @@ Centralized configuration constants for LightRAG.
 This module defines default values for configuration constants used across
 different parts of the LightRAG system. Centralizing these values ensures
 consistency and makes maintenance easier.
+
+CUSTOMIZED FOR: Vietnamese Legal Documents (Luật Địa chất và Khoáng sản)
 """
 
 # Default values for server settings
 DEFAULT_WOKERS = 2
-DEFAULT_MAX_GRAPH_NODES = 1000
+DEFAULT_MAX_GRAPH_NODES = 5000  # Tăng từ 1000 để phù hợp với văn bản pháp luật dày đặc
 
 # Default values for extraction settings
-DEFAULT_SUMMARY_LANGUAGE = "Vietnamese"  # Default language for document processing
+DEFAULT_SUMMARY_LANGUAGE = "Vietnamese"  # Changed from "English" to "Vietnamese"
 DEFAULT_MAX_GLEANING = 1
 
 # Number of description fragments to trigger LLM summary
@@ -22,19 +24,50 @@ DEFAULT_SUMMARY_MAX_TOKENS = 1200
 DEFAULT_SUMMARY_LENGTH_RECOMMENDED = 600
 # Maximum token size sent to LLM for summary
 DEFAULT_SUMMARY_CONTEXT_SIZE = 12000
-# Default entities to extract if ENTITY_TYPES is not specified in .env
+
+# =============================================================================
+# ENTITY TYPES FOR VIETNAMESE LEGAL DOCUMENTS
+# Optimized for: Luật Địa chất và Khoáng sản (54/2024/QH15) & Nghị định 193
+# =============================================================================
 DEFAULT_ENTITY_TYPES = [
-    "Person",
-    "Creature",
-    "Organization",
-    "Location",
-    "Event",
-    "Concept",
-    "Method",
-    "Content",
-    "Data",
-    "Artifact",
-    "NaturalObject",
+    # --- CẤU TRÚC VĂN BẢN (5) ---
+    "LegalDocument",      # Luật 54, NĐ 193, Thông tư...
+    "Chapter",            # Chương
+    "Article",            # Điều
+    "Clause",             # Khoản
+    "Point",              # Điểm
+    
+    # --- CHỦ THỂ (3) ---
+    "Organization",       # Bộ NN&MT, UBND tỉnh, Cục, Sở
+    "Council",            # Hội đồng thẩm định/đánh giá
+    "Subject",            # DN, HTX, Cá nhân (người thực hiện)
+    
+    # --- ĐỐI TƯỢNG KHOÁNG SẢN (3) ---
+    "MineralGroup",       # Nhóm I, II, III, IV
+    "SpecialMineral",     # Chiến lược, quan trọng, phóng xạ, độc hại
+    "WasteProduct",       # Đất đá thải, quặng đuôi
+    
+    # --- HỒ SƠ & PHÁP LÝ (3) ---
+    "License",            # Giấy phép thăm dò/khai thác
+    "TechnicalDoc",       # Đề án thăm dò, Thiết kế mỏ, Đề án đóng cửa mỏ
+    "Dossier",            # Hồ sơ (tập hợp các tài liệu nộp)
+    
+    # --- KHÔNG GIAN & THỜI GIAN (3) ---
+    "ManagementArea",     # Khu vực cấm, dự trữ, đấu giá...
+    "TimeDuration",       # 30 ngày, 12 tháng, 20 năm (thời hạn)
+    "Concept",            # Khái niệm chung (Tai biến, An toàn mỏ, định nghĩa Điều 2...)
+    
+    # --- TÀI CHÍNH (3) ---
+    "FinancialObligation",# Tiền cấp quyền, Thuế, Phí môi trường
+    "AuctionFee",         # Tiền đặt trước, Bước giá
+    "Cost",               # Chi phí hoàn trả thăm dò (định lượng cụ thể)
+    
+    # --- QUY ĐỊNH & THI HÀNH (5) ---
+    "Process",            # Thủ tục hành chính (Cấp phép, Gia hạn...)
+    "Condition",          # Điều kiện (để được cấp phép/tham gia)
+    "Criteria",           # Tiêu chí (để khoanh định khu vực/chấm điểm)
+    "Obligation",         # Nghĩa vụ/Trách nhiệm (Báo cáo, nộp tiền...)
+    "Violation_Penalty",  # Gộp Vi phạm & Chế tài (để giảm độ phức tạp)
 ]
 
 # Separator for graph fields
@@ -50,7 +83,7 @@ DEFAULT_COSINE_THRESHOLD = 0.2
 DEFAULT_RELATED_CHUNK_NUMBER = 5
 DEFAULT_KG_CHUNK_PICK_METHOD = "VECTOR"
 
-# TODO: Deprated. All conversation_history messages is send to LLM.
+# TODO: Deprecated. All conversation_history messages is send to LLM.
 DEFAULT_HISTORY_TURNS = 0
 
 # Rerank configuration defaults
