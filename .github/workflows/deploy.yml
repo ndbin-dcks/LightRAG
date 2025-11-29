@@ -56,7 +56,7 @@ jobs:
             
             echo ""
             echo "======================================"
-            echo "✅ Deployment completed!"
+            echo "  Deployment completed!"
             echo "======================================"
             echo "API: http://180.93.137.38:3000"
             echo "WebUI: http://180.93.137.38:3000/webui/"
