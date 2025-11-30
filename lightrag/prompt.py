@@ -264,7 +264,7 @@ Tạo câu trả lời theo định dạng {response_type} để trả lời câ
 
 ---Context---
 
-{content_data}
+{context_data}
 """
 
 PROMPTS["naive_rag_response"] = """---Role---
@@ -277,7 +277,7 @@ Tạo câu trả lời theo định dạng {response_type} dựa trên văn bả
 
 ---Context---
 
-{content_data}
+{context_data}
 """
 
 PROMPTS["kg_query_context"] = """
