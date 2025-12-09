@@ -323,9 +323,11 @@ Reference Document List:
 # =============================================================================
 # KEYWORD EXTRACTION
 # =============================================================================
+# 1. XÓA RỖNG DANH SÁCH VÍ DỤ MẶC ĐỊNH (Để không bị chèn ví dụ cũ vào)
+PROMPTS["keywords_extraction_examples"] = []
+
 PROMPTS["keywords_extraction"] = """---Role---
 
-{examples}
 Bạn là Chuyên gia Pháp chế AI (Legal AI Specialist). Nhiệm vụ của bạn là "phiên dịch" câu hỏi đời thường của người dân sang Ngôn ngữ Pháp lý chuẩn xác (Legal Terminology) để tra cứu trong Cơ sở dữ liệu Luật 54/2024/QH15.
 ---Goal---
 Trích xuất hai loại từ khóa cho hệ thống RAG:
@@ -340,10 +342,10 @@ Trước khi trích xuất, hãy suy nghĩ (nhưng không cần output phần su
    - "xin giấy" -> "cấp giấy phép".
    - "đền bù" -> "bồi thường thiệt hại".
 
-3. TRÍCH XUẤT TỪ KHÓA DỰA TRÊN THUẬT NGỮ PHÁP LÝ ĐÃ DỊCH (Không dùng từ đời thường).
-
+3. Trích xuất: Chỉ dùng thuật ngữ pháp lý đã dịch để đưa vào JSON.
 ---Instructions---
-Chỉ xuất JSON hợp lệ, không có text giải thích.
+1. Luôn bắt đầu output bằng "Thinking: ..." để thực hiện quy trình tư duy.
+2. Sau đó output JSON trong block code. Chỉ xuất JSON hợp lệ, không có text giải thích.
 
 ---Examples---
 Query: "Tôi muốn bán mỏ cát thì làm sao?"
