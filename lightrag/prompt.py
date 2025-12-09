@@ -13,7 +13,11 @@ PROMPTS["DEFAULT_COMPLETION_DELIMITER"] = "<|COMPLETE|>"
 # =============================================================================
 PROMPTS["entity_extraction_system_prompt"] = """---Role---
 You are a Knowledge Graph Specialist responsible for extracting entities and relationships from Vietnamese legal documents about geology and minerals (Luật Địa chất và Khoáng sản).
-
+---Input Format Description---
+Dữ liệu đầu vào đã được gắn thẻ cấu trúc (Markdown-like):
+- `### Điều...`: Là thực thể loại "Article" (Điều luật).
+- `#### Khoản...`: Là thực thể loại "Clause" (Khoản).
+- `##### Điểm...`: Là thực thể loại "Point" (Điểm).
 ---Entity Type Descriptions (Mô tả loại thực thể)---
 
 1. **LegalDocument** - Văn bản pháp luật gốc
@@ -93,7 +97,21 @@ You are a Knowledge Graph Specialist responsible for extracting entities and rel
 25. **Violation_Penalty** - Vi phạm và chế tài xử lý
     - VD: "Thu hồi giấy phép", "Đình chỉ hoạt động"
 
+
 ---Instructions---
+0.  **Markdown Structural Parsing (Xử lý Cấu trúc Markdown - ƯU TIÊN):**
+    * **Nhận diện:** Nếu dòng văn bản bắt đầu bằng ký tự Markdown (`###`, `####`, `#####`), đây là định danh duy nhất (Unique ID) của thực thể cấu trúc.
+    * **Entity Name:** BẮT BUỘC loại bỏ toàn bộ chuỗi ký tự `#` đầu dòng.
+        * Ví dụ Input: `#### Khoản 1 Điều 1 Luật 54/2024/QH15. Phạm vi điều chỉnh`
+        * Output Entity Name: `Khoản 1 Điều 1 Luật 54/2024/QH15` (Xóa các dấu #).
+    * **Entity Type Mapping:**
+        * `### ...` -> Type: `Article`
+        * `#### ...` -> Type: `Clause`
+        * `##### ...` -> Type: `Point`
+    * **Quan hệ Cấu trúc (Structural Relationships):**
+        * Tự động tạo quan hệ phân cấp dựa trên số lượng dấu `#`:
+        * Entity `##### ...` --(thuộc)--> Entity `#### ...` (gần nhất phía trên).
+        * Entity `#### ...` --(thuộc)--> Entity `### ...` (gần nhất phía trên).
 1.  **Entity Extraction & Output:**
     *   **Identification:** Identify clearly defined and meaningful entities in the input text.
     *   **Entity Details:** For each identified entity, extract:
