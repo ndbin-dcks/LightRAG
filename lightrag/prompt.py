@@ -323,43 +323,47 @@ Reference Document List:
 # =============================================================================
 # KEYWORD EXTRACTION
 # =============================================================================
-# 1. XÓA RỖNG DANH SÁCH VÍ DỤ MẶC ĐỊNH (Để không bị chèn ví dụ cũ vào)
+# =============================================================================
+# KEYWORD EXTRACTION
+# =============================================================================
+
+# 1. XÓA RỖNG VÍ DỤ MẶC ĐỊNH
 PROMPTS["keywords_extraction_examples"] = []
 
+# 2. CẬP NHẬT PROMPT (Logic suy luận nằm TRONG JSON)
 PROMPTS["keywords_extraction"] = """---Role---
+Bạn là Chuyên gia Pháp chế AI (Legal AI Specialist). Nhiệm vụ của bạn là trích xuất từ khóa từ câu hỏi đời thường để tra cứu trong Cơ sở dữ liệu Luật 54/2024/QH15.
 
-Bạn là Chuyên gia Pháp chế AI (Legal AI Specialist). Nhiệm vụ của bạn là "phiên dịch" câu hỏi đời thường của người dân sang Ngôn ngữ Pháp lý chuẩn xác (Legal Terminology) để tra cứu trong Cơ sở dữ liệu Luật 54/2024/QH15.
 ---Goal---
-Trích xuất hai loại từ khóa cho hệ thống RAG:
-1. high_level_keywords: Khái niệm pháp lý, Chế định luật.
-2. low_level_keywords: Thực thể pháp lý, Tên thủ tục, Điều khoản cụ thể.
+Output một JSON duy nhất chứa 3 trường thông tin:
+1. "_thought": (BẮT BUỘC) Suy luận và dịch thuật ngữ đời thường sang thuật ngữ pháp lý.
+2. "high_level_keywords": Các khái niệm pháp lý, chế định luật (Dựa trên kết quả dịch).
+3. "low_level_keywords": Các thực thể, điều khoản cụ thể (Dựa trên kết quả dịch).
 
----CRITICAL THINKING PROCESS (QUY TRÌNH TƯ DUY - BẮT BUỘC)---
-Trước khi trích xuất, hãy suy nghĩ (nhưng không cần output phần suy nghĩ):
-1. Người dùng đang dùng từ đời thường nào? (VD: "bán mỏ", "xin giấy", "đền bù").
-2. Thuật ngữ pháp lý chính xác tương ứng trong Luật Địa chất là gì?
-   - "bán mỏ" -> "chuyển nhượng quyền khai thác khoáng sản".
-   - "xin giấy" -> "cấp giấy phép".
-   - "đền bù" -> "bồi thường thiệt hại".
-
-3. Trích xuất: Chỉ dùng thuật ngữ pháp lý đã dịch để đưa vào JSON.
----Instructions---
-1. Luôn bắt đầu output bằng "Thinking: ..." để thực hiện quy trình tư duy.
-2. Sau đó output JSON trong block code. Chỉ xuất JSON hợp lệ, không có text giải thích.
+---TRANSLATION RULES (QUY TẮC DỊCH)---
+- "bán mỏ" -> "chuyển nhượng quyền khai thác khoáng sản".
+- "mua mỏ" -> "nhận chuyển nhượng quyền khai thác".
+- "xin giấy" -> "đề nghị cấp giấy phép".
+- "đền bù" -> "bồi thường thiệt hại".
+- "đất hiếm" -> "khoáng sản chiến lược, quan trọng".
 
 ---Examples---
 Query: "Tôi muốn bán mỏ cát thì làm sao?"
-Thinking: "Bán mỏ" = "Chuyển nhượng quyền khai thác". "Cát" = "Khoáng sản làm vật liệu xây dựng thông thường" hoặc "Cát sỏi lòng sông".
 Output:
+JSON
 {
+  "_thought": "Người dùng dùng từ 'bán mỏ', trong Luật Địa chất gọi là 'chuyển nhượng quyền khai thác'. 'Cát' là 'khoáng sản vật liệu xây dựng'. Cần tìm thủ tục chuyển nhượng.",
   "high_level_keywords": ["Chuyển nhượng quyền khai thác khoáng sản", "Thủ tục hành chính"],
   "low_level_keywords": ["Giấy phép khai thác khoáng sản", "Điều kiện chuyển nhượng", "Nghĩa vụ tài chính"]
 }
 
-Query: "Ai có quyền cho phép đào đất hiếm?"
-Thinking: "Cho phép đào" = "Cấp giấy phép khai thác". "Đất hiếm" = "Khoáng sản chiến lược, quan trọng" hoặc "Khoáng sản nhóm I".
+Query: "Ai cho phép đào đất hiếm?"
 Output:
+
+JSON
+
 {
+  "_thought": "'Cho phép đào' tức là 'Thẩm quyền cấp giấy phép khai thác'. 'Đất hiếm' thuộc nhóm 'Khoáng sản chiến lược/quan trọng' hoặc Nhóm I.",
   "high_level_keywords": ["Thẩm quyền cấp phép", "Quản lý nhà nước về khoáng sản"],
   "low_level_keywords": ["Bộ Tài nguyên và Môi trường", "Khoáng sản chiến lược", "Khoáng sản nhóm I"]
 }
@@ -368,21 +372,3 @@ User Query: {query}
 
 Output:"""
 
-PROMPTS["keywords_extraction_examples"] = [
-    """Query: "Điều kiện cấp giấy phép thăm dò khoáng sản nhóm I?"
-
-Output:
-{
-  "high_level_keywords": ["Điều kiện cấp phép", "Giấy phép thăm dò"],
-  "low_level_keywords": ["Khoáng sản nhóm I", "Thăm dò"]
-}
-""",
-    """Query: "Thẩm quyền của UBND cấp tỉnh trong cấp phép khai thác?"
-
-Output:
-{
-  "high_level_keywords": ["Thẩm quyền cấp phép", "UBND cấp tỉnh"],
-  "low_level_keywords": ["Giấy phép khai thác khoáng sản", "Điều 108"]
-}
-""",
-]
