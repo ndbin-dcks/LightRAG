@@ -323,52 +323,40 @@ Reference Document List:
 # =============================================================================
 # KEYWORD EXTRACTION
 # =============================================================================
-# =============================================================================
-# KEYWORD EXTRACTION
-# =============================================================================
-
-# 1. XÓA RỖNG VÍ DỤ MẶC ĐỊNH
-PROMPTS["keywords_extraction_examples"] = []
-
-# 2. CẬP NHẬT PROMPT (Logic suy luận nằm TRONG JSON)
 PROMPTS["keywords_extraction"] = """---Role---
-Bạn là Chuyên gia Pháp chế AI (Legal AI Specialist). Nhiệm vụ của bạn là trích xuất từ khóa từ câu hỏi đời thường để tra cứu trong Cơ sở dữ liệu Luật 54/2024/QH15.
+Bạn là chuyên gia trích xuất từ khóa cho hệ thống RAG về Luật Địa chất và Khoáng sản.
 
 ---Goal---
-Output một JSON duy nhất chứa 3 trường thông tin:
-1. "_thought": (BẮT BUỘC) Suy luận và dịch thuật ngữ đời thường sang thuật ngữ pháp lý.
-2. "high_level_keywords": Các khái niệm pháp lý, chế định luật (Dựa trên kết quả dịch).
-3. "low_level_keywords": Các thực thể, điều khoản cụ thể (Dựa trên kết quả dịch).
+Trích xuất hai loại từ khóa:
+1. high_level_keywords: Khái niệm tổng quát
+2. low_level_keywords: Thực thể cụ thể, số điều khoản
 
----TRANSLATION RULES (QUY TẮC DỊCH)---
-- "bán mỏ" -> "chuyển nhượng quyền khai thác khoáng sản".
-- "mua mỏ" -> "nhận chuyển nhượng quyền khai thác".
-- "xin giấy" -> "đề nghị cấp giấy phép".
-- "đền bù" -> "bồi thường thiệt hại".
-- "đất hiếm" -> "khoáng sản chiến lược, quan trọng".
+---Instructions---
+Chỉ xuất JSON hợp lệ, không có text giải thích.
 
 ---Examples---
-Query: "Tôi muốn bán mỏ cát thì làm sao?"
-Output:
-JSON
-{
-  "_thought": "Người dùng dùng từ 'bán mỏ', trong Luật Địa chất gọi là 'chuyển nhượng quyền khai thác'. 'Cát' là 'khoáng sản vật liệu xây dựng'. Cần tìm thủ tục chuyển nhượng.",
-  "high_level_keywords": ["Chuyển nhượng quyền khai thác khoáng sản", "Thủ tục hành chính"],
-  "low_level_keywords": ["Giấy phép khai thác khoáng sản", "Điều kiện chuyển nhượng", "Nghĩa vụ tài chính"]
-}
+{examples}
 
-Query: "Ai cho phép đào đất hiếm?"
-Output:
-
-JSON
-
-{
-  "_thought": "'Cho phép đào' tức là 'Thẩm quyền cấp giấy phép khai thác'. 'Đất hiếm' thuộc nhóm 'Khoáng sản chiến lược/quan trọng' hoặc Nhóm I.",
-  "high_level_keywords": ["Thẩm quyền cấp phép", "Quản lý nhà nước về khoáng sản"],
-  "low_level_keywords": ["Bộ Tài nguyên và Môi trường", "Khoáng sản chiến lược", "Khoáng sản nhóm I"]
-}
 ---Real Data---
 User Query: {query}
 
 Output:"""
 
+PROMPTS["keywords_extraction_examples"] = [
+    """Query: "Điều kiện cấp giấy phép thăm dò khoáng sản nhóm I?"
+
+Output:
+{
+  "high_level_keywords": ["Điều kiện cấp phép", "Giấy phép thăm dò"],
+  "low_level_keywords": ["Khoáng sản nhóm I", "Thăm dò"]
+}
+""",
+    """Query: "Thẩm quyền của UBND cấp tỉnh trong cấp phép khai thác?"
+
+Output:
+{
+  "high_level_keywords": ["Thẩm quyền cấp phép", "UBND cấp tỉnh"],
+  "low_level_keywords": ["Giấy phép khai thác khoáng sản", "Điều 108"]
+}
+""",
+]
