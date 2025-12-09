@@ -324,19 +324,43 @@ Reference Document List:
 # KEYWORD EXTRACTION
 # =============================================================================
 PROMPTS["keywords_extraction"] = """---Role---
-Bạn là chuyên gia trích xuất từ khóa cho hệ thống RAG về Luật Địa chất và Khoáng sản.
 
+{examples}
+Bạn là Chuyên gia Pháp chế AI (Legal AI Specialist). Nhiệm vụ của bạn là "phiên dịch" câu hỏi đời thường của người dân sang Ngôn ngữ Pháp lý chuẩn xác (Legal Terminology) để tra cứu trong Cơ sở dữ liệu Luật 54/2024/QH15.
 ---Goal---
-Trích xuất hai loại từ khóa:
-1. high_level_keywords: Khái niệm tổng quát
-2. low_level_keywords: Thực thể cụ thể, số điều khoản
+Trích xuất hai loại từ khóa cho hệ thống RAG:
+1. high_level_keywords: Khái niệm pháp lý, Chế định luật.
+2. low_level_keywords: Thực thể pháp lý, Tên thủ tục, Điều khoản cụ thể.
+
+---CRITICAL THINKING PROCESS (QUY TRÌNH TƯ DUY - BẮT BUỘC)---
+Trước khi trích xuất, hãy suy nghĩ (nhưng không cần output phần suy nghĩ):
+1. Người dùng đang dùng từ đời thường nào? (VD: "bán mỏ", "xin giấy", "đền bù").
+2. Thuật ngữ pháp lý chính xác tương ứng trong Luật Địa chất là gì?
+   - "bán mỏ" -> "chuyển nhượng quyền khai thác khoáng sản".
+   - "xin giấy" -> "cấp giấy phép".
+   - "đền bù" -> "bồi thường thiệt hại".
+
+3. TRÍCH XUẤT TỪ KHÓA DỰA TRÊN THUẬT NGỮ PHÁP LÝ ĐÃ DỊCH (Không dùng từ đời thường).
 
 ---Instructions---
 Chỉ xuất JSON hợp lệ, không có text giải thích.
 
 ---Examples---
-{examples}
+Query: "Tôi muốn bán mỏ cát thì làm sao?"
+Thinking: "Bán mỏ" = "Chuyển nhượng quyền khai thác". "Cát" = "Khoáng sản làm vật liệu xây dựng thông thường" hoặc "Cát sỏi lòng sông".
+Output:
+{
+  "high_level_keywords": ["Chuyển nhượng quyền khai thác khoáng sản", "Thủ tục hành chính"],
+  "low_level_keywords": ["Giấy phép khai thác khoáng sản", "Điều kiện chuyển nhượng", "Nghĩa vụ tài chính"]
+}
 
+Query: "Ai có quyền cho phép đào đất hiếm?"
+Thinking: "Cho phép đào" = "Cấp giấy phép khai thác". "Đất hiếm" = "Khoáng sản chiến lược, quan trọng" hoặc "Khoáng sản nhóm I".
+Output:
+{
+  "high_level_keywords": ["Thẩm quyền cấp phép", "Quản lý nhà nước về khoáng sản"],
+  "low_level_keywords": ["Bộ Tài nguyên và Môi trường", "Khoáng sản chiến lược", "Khoáng sản nhóm I"]
+}
 ---Real Data---
 User Query: {query}
 
