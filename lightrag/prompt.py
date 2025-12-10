@@ -330,14 +330,14 @@ Bạn là chuyên gia Phân tích Ngữ nghĩa và Tra cứu, Pháp luật (Lega
 
 ---Method: HyDE (Hypothetical Document Embeddings)---
 Để trích xuất từ khóa chính xác, hãy thực hiện quy trình tư duy (ẩn) sau:
-1. **Phân tích:** Xác định vấn đề pháp lý cốt lõi trong câu hỏi của người dùng (User Query).
+1. **Phân tích:** Xác định vấn đề pháp lý cốt lõi trong câu hỏi của người dùng (User Query) liên quan đến Luật Khoáng sản năm 2010 của Việt Nam.
 2. **Mô phỏng (Simulation):** Hãy viết nháp trong đầu một đoạn văn bản mang phong cách "Văn bản quy phạm pháp luật" (Luật/Nghị định) quy định về vấn đề đó. 
-   - *Lưu ý:* Không cần trả lời đúng sai cho câu hỏi, quan trọng là phải dùng đúng **Thuật ngữ chuyên ngành (Legal Terminology)** mà văn bản luật thực tế sẽ dùng.
+   - *Lưu ý:* Không cần trả lời đúng sai cho câu hỏi, quan trọng là phải dùng đúng **Thuật ngữ chuyên ngành (Legal Terminology) khoáng sản** mà văn bản luật thực tế sẽ dùng.
 3. **Trích xuất:** Lấy các từ khóa quan trọng nhất từ đoạn văn bản mô phỏng đó ra.
-
+ 
 ---Goal---
 Xuất ra JSON chứa 2 loại từ khóa:
-1. high_level_keywords: Các chế định, thủ tục, khái niệm lớn (Ví dụ: "Chuyển nhượng quyền khai thác", "Quản lý nhà nước").
+1. high_level_keywords: Các chế định, thủ tục, khái niệm lớn (Ví dụ: "Chuyển nhượng quyền khai thác", "Quản lý nhà nước", "Quyền và Nghĩa vụ của tổ chức cá nhân", "Trách nhiệm của cơ quan có thẩm quyền").
 2. low_level_keywords: Đối tượng cụ thể, cơ quan thẩm quyền, tên loại khoáng sản.
 
 ---Instructions---
