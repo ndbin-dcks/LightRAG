@@ -324,15 +324,24 @@ Reference Document List:
 # KEYWORD EXTRACTION
 # =============================================================================
 PROMPTS["keywords_extraction"] = """---Role---
-Bạn là chuyên gia trích xuất từ khóa cho hệ thống RAG về Luật Địa chất và Khoáng sản.
+Bạn là chuyên gia Phân tích Ngữ nghĩa và Tra cứu, Pháp luật (Legal Semantic Expert).
+
+---Method: HyDE (Hypothetical Document Embeddings)---
+Để trích xuất từ khóa chính xác, hãy thực hiện quy trình tư duy (ẩn) sau:
+1. **Phân tích:** Xác định vấn đề pháp lý cốt lõi trong câu hỏi của người dùng (User Query).
+2. **Mô phỏng (Simulation):** Hãy viết nháp trong đầu một đoạn văn bản mang phong cách "Văn bản quy phạm pháp luật" (Luật/Nghị định) quy định về vấn đề đó. 
+   - *Lưu ý:* Không cần trả lời đúng sai cho câu hỏi, quan trọng là phải dùng đúng **Thuật ngữ chuyên ngành (Legal Terminology)** mà văn bản luật thực tế sẽ dùng.
+3. **Trích xuất:** Lấy các từ khóa quan trọng nhất từ đoạn văn bản mô phỏng đó ra.
 
 ---Goal---
-Trích xuất hai loại từ khóa:
-1. high_level_keywords: Khái niệm tổng quát
-2. low_level_keywords: Thực thể cụ thể, số điều khoản
+Xuất ra JSON chứa 2 loại từ khóa:
+1. high_level_keywords: Các chế định, thủ tục, khái niệm lớn (Ví dụ: "Chuyển nhượng quyền khai thác", "Quản lý nhà nước").
+2. low_level_keywords: Đối tượng cụ thể, cơ quan thẩm quyền, tên loại khoáng sản.
 
 ---Instructions---
-Chỉ xuất JSON hợp lệ, không có text giải thích.
+- Chỉ xuất JSON hợp lệ.
+- KHÔNG kèm text giải thích.
+- Từ khóa phải là thuật ngữ pháp lý chuẩn (Standardized Legal Terms).
 
 ---Examples---
 {examples}
@@ -343,20 +352,20 @@ User Query: {query}
 Output:"""
 
 PROMPTS["keywords_extraction_examples"] = [
-    """Query: "Điều kiện cấp giấy phép thăm dò khoáng sản nhóm I?"
+    """Query: "Tôi muốn bán lại cái mỏ cát cho người khác thì làm thế nào?"
 
 Output:
 {
-  "high_level_keywords": ["Điều kiện cấp phép", "Giấy phép thăm dò"],
-  "low_level_keywords": ["Khoáng sản nhóm I", "Thăm dò"]
+  "high_level_keywords": ["Chuyển nhượng quyền khai thác khoáng sản", "Thủ tục hành chính", "Nghĩa vụ tài chính"],
+  "low_level_keywords": ["Cát lòng sông", "Sở Tài nguyên và Môi trường", "Hồ sơ chuyển nhượng", "Điều kiện chuyển nhượng"]
 }
 """,
-    """Query: "Thẩm quyền của UBND cấp tỉnh trong cấp phép khai thác?"
+    """Query: "Tỉnh có được cấp phép cho đào đá không?"
 
 Output:
 {
-  "high_level_keywords": ["Thẩm quyền cấp phép", "UBND cấp tỉnh"],
-  "low_level_keywords": ["Giấy phép khai thác khoáng sản", "Điều 108"]
+  "high_level_keywords": ["Thẩm quyền cấp phép", "Phân cấp quản lý nhà nước", "Hoạt động khoáng sản"],
+  "low_level_keywords": ["UBND cấp tỉnh", "Giấy phép khai thác khoáng sản", "Đá làm vật liệu xây dựng thông thường"]
 }
-""",
+"""
 ]
