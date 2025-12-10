@@ -324,21 +324,23 @@ Reference Document List:
 # KEYWORD EXTRACTION
 # =============================================================================
 PROMPTS["keywords_extraction"] = """---Role---
-Bạn là chuyên gia Phân tích Ngữ nghĩa và Tra cứu Pháp luật (Legal Semantic Expert).
+Bạn là chuyên gia Phân tích Ngữ nghĩa và Tra cứu, Pháp luật (Legal Semantic Expert).
 
----Method: HyDE (Hypothetical Document Extraction)---
-Để trích xuất từ khóa chính xác nhất, bạn hãy thực hiện quy trình tư duy 2 bước (ẩn):
-1. Bước 1 (Tư duy): Dựa trên câu hỏi người dùng, hãy viết nháp trong đầu một đoạn văn bản giả định (Hypothetical Document) mang văn phong Luật Địa chất và Khoáng sản, chứa câu trả lời chính xác và sử dụng thuật ngữ chuyên ngành.
-2. Bước 2 (Trích xuất): Trích xuất từ khóa từ đoạn văn bản giả định đó (thay vì chỉ lấy từ câu hỏi gốc).
+---Method: HyDE (Hypothetical Document Embeddings)---
+Để trích xuất từ khóa chính xác, hãy thực hiện quy trình tư duy (ẩn) sau:
+1. **Phân tích:** Xác định vấn đề pháp lý cốt lõi trong câu hỏi của người dùng (User Query).
+2. **Mô phỏng (Simulation):** Hãy viết nháp trong đầu một đoạn văn bản mang phong cách "Văn bản quy phạm pháp luật" (Luật/Nghị định) quy định về vấn đề đó. 
+   - *Lưu ý:* Không cần trả lời đúng sai cho câu hỏi, quan trọng là phải dùng đúng **Thuật ngữ chuyên ngành (Legal Terminology)** mà văn bản luật thực tế sẽ dùng.
+3. **Trích xuất:** Lấy các từ khóa quan trọng nhất từ đoạn văn bản mô phỏng đó ra.
 
 ---Goal---
-Xuất ra JSON chứa 2 loại từ khóa đã được "phiên dịch" sang ngôn ngữ luật:
-1. high_level_keywords: Các chế định, khái niệm pháp lý lớn (Ví dụ: user hỏi "bán mỏ" -> keyword "Chuyển nhượng quyền khai thác").
-2. low_level_keywords: Đối tượng cụ thể, loại khoáng sản, tên cơ quan, số điều khoản (nếu user nhắc đích danh).
+Xuất ra JSON chứa 2 loại từ khóa:
+1. high_level_keywords: Các chế định, thủ tục, khái niệm lớn (Ví dụ: "Chuyển nhượng quyền khai thác", "Quản lý nhà nước").
+2. low_level_keywords: Đối tượng cụ thể, cơ quan thẩm quyền, tên loại khoáng sản.
 
 ---Instructions---
 - Chỉ xuất JSON hợp lệ.
-- KHÔNG kèm theo text giải thích.
+- KHÔNG kèm text giải thích.
 - Từ khóa phải là thuật ngữ pháp lý chuẩn (Standardized Legal Terms).
 
 ---Examples---
@@ -350,28 +352,20 @@ User Query: {query}
 Output:"""
 
 PROMPTS["keywords_extraction_examples"] = [
-    """Query: "Công ty tôi muốn bán lại cái mỏ cát cho bên khác thì làm thế nào?"
+    """Query: "Tôi muốn bán lại cái mỏ cát cho người khác thì làm thế nào?"
 
 Output:
 {
   "high_level_keywords": ["Chuyển nhượng quyền khai thác khoáng sản", "Thủ tục hành chính", "Nghĩa vụ tài chính"],
-  "low_level_keywords": ["Cát lòng sông", "Vật liệu xây dựng thông thường", "Sở Tài nguyên và Môi trường", "Hồ sơ chuyển nhượng"]
+  "low_level_keywords": ["Cát lòng sông", "Sở Tài nguyên và Môi trường", "Hồ sơ chuyển nhượng", "Điều kiện chuyển nhượng"]
 }
 """,
-    """Query: "Thẩm quyền của tỉnh trong việc cấp phép đào đá?"
+    """Query: "Tỉnh có được cấp phép cho đào đá không?"
 
 Output:
 {
-  "high_level_keywords": ["Thẩm quyền cấp phép", "Quản lý nhà nước về khoáng sản", "Phân cấp quản lý"],
+  "high_level_keywords": ["Thẩm quyền cấp phép", "Phân cấp quản lý nhà nước", "Hoạt động khoáng sản"],
   "low_level_keywords": ["UBND cấp tỉnh", "Giấy phép khai thác khoáng sản", "Đá làm vật liệu xây dựng thông thường"]
-}
-""",
-    """Query: "Điều 55 quy định gì về quyền của dân đào mỏ?"
-
-Output:
-{
-  "high_level_keywords": ["Quyền và nghĩa vụ", "Hoạt động khai thác"],
-  "low_level_keywords": ["Tổ chức cá nhân khai thác khoáng sản", "Điều 55", "Luật Địa chất và Khoáng sản"]
 }
 """
 ]
