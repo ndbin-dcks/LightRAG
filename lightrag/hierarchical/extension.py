@@ -1,8 +1,13 @@
 """
-Main HierarchicalExtension class
+Main HierarchicalExtension class - CORRECTED VERSION
 
 This class extends LightRAG with hierarchical clustering capabilities
 without modifying the original LightRAG code.
+
+FIXES APPLIED:
+1. ✅ Lazy-load database connection via @property
+2. ✅ Correct LLM function attribute name (llm_model_func not best_model_func)
+3. ✅ Lazy-load storage helper to ensure valid db connection
 """
 
 import asyncio
@@ -50,14 +55,11 @@ class HierarchicalExtension:
             )
         
         self.lightrag = lightrag_instance
-        self.db = lightrag_instance.chunk_entity_relation_graph.db
         self.workspace = lightrag_instance.workspace
         
-        self.llm_func = lightrag_instance.best_model_func
+        # ✅ FIXED: Correct attribute name (was best_model_func)
+        self.llm_func = lightrag_instance.llm_model_func
         self.embed_func = lightrag_instance.embedding_func
-        
-        # Initialize storage helper
-        self.storage = CommunityStorage(self.db, self.workspace)
         
         # Configuration
         self.config = {
@@ -71,6 +73,36 @@ class HierarchicalExtension:
         }
         
         logger.info(f"HierarchicalExtension initialized for workspace: {self.workspace}")
+    
+    # ✅ FIXED: Lazy-load database connection
+    @property
+    def db(self):
+        """
+        Lazy-load database connection
+        
+        This ensures db is only accessed AFTER initialize_storages() has been called
+        on the parent LightRAG instance.
+        
+        Returns:
+            Database connection from chunk_entity_relation_graph
+        """
+        return self.lightrag.chunk_entity_relation_graph.db
+    
+    # ✅ FIXED: Lazy-load storage helper
+    @property
+    def storage(self):
+        """
+        Lazy-load storage helper
+        
+        Creates CommunityStorage on-demand with current db connection.
+        This ensures the storage helper always has a valid database connection.
+        
+        Returns:
+            CommunityStorage instance
+        """
+        if not hasattr(self, '_storage') or self._storage is None:
+            self._storage = CommunityStorage(self.db, self.workspace)
+        return self._storage
     
     async def load_layer_0_entities(self) -> List[Dict[str, Any]]:
         """
