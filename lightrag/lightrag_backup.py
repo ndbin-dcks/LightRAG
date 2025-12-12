@@ -143,10 +143,6 @@ class LightRAG:
     workspace: str = field(default_factory=lambda: os.getenv("WORKSPACE", ""))
     """Workspace for data isolation. Defaults to empty string if WORKSPACE environment variable is not set."""
 
-    enable_hierarchical: bool = field(default=False)
-    """Enable hierarchical community detection extension."""
-
-
     # Logging (Deprecated, use setup_logger in utils.py instead)
     # ---
     log_level: int | None = field(default=None)
@@ -582,18 +578,6 @@ class LightRAG:
         )
 
         self._storages_status = StoragesStatus.CREATED
-        # Initialize hierarchical extension
-        self.hierarchical_ext = None
-        if self.enable_hierarchical:
-            try:
-                from .hierarchical import HierarchicalExtension
-                self.hierarchical_ext = HierarchicalExtension(self)
-                logger.info("Hierarchical extension enabled")
-            except ImportError as e:
-                logger.warning(f"Hierarchical extension not available: {e}")
-                logger.warning("Install dependencies: pip install umap-learn scikit-learn")
-        # ==============================
-
 
     async def initialize_storages(self):
         """Storage initialization must be called one by one to prevent deadlock"""
