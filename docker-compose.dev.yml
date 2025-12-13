@@ -1,0 +1,35 @@
+# Docker Compose - Development Mode
+# Code được mount từ host filesystem cho rapid development
+# Changes trong /opt/lightrag/lightrag/ có hiệu lực ngay sau restart
+# Sử dụng external PostgreSQL container (lightrag-postgres) đã tồn tại
+
+services:
+  lightrag:
+    image: ghcr.io/hkuds/lightrag:latest
+    container_name: lightrag-dev
+    ports:
+      - "9621:9621"
+    volumes:
+      # Data volumes (persistent storage)
+      - ./data/rag_storage:/app/data/rag_storage
+      - ./data/inputs:/app/data/inputs
+      - ./data/tiktoken:/app/data/tiktoken
+      
+      # Configuration files
+      - ./config.ini:/app/config.ini
+      - ./.env:/app/.env
+      
+      # CODE MOUNT - Development only! 🔧
+      # Sửa code trong /opt/lightrag/lightrag/ → restart container → có hiệu lực ngay
+      - ./lightrag:/app/lightrag:ro  # Read-only để tránh container ghi đè
+      
+    env_file:
+      - .env
+    environment:
+      - TIKTOKEN_CACHE_DIR=/app/data/tiktoken
+      - LOG_LEVEL=DEBUG  # Debug mode for development
+    restart: unless-stopped
+    # Connect to existing lightrag-postgres container
+    external_links:
+      - lightrag-postgres:lightrag-postgres
+    network_mode: bridge

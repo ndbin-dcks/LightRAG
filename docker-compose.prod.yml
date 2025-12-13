@@ -1,0 +1,33 @@
+# Docker Compose - Production Mode
+# Code được baked vào Docker image từ GitHub
+# KHÔNG mount code từ host filesystem
+# Sử dụng external PostgreSQL container (lightrag-postgres) đã tồn tại
+
+services:
+  lightrag:
+    image: ghcr.io/hkuds/lightrag:latest
+    container_name: lightrag
+    ports:
+      - "9621:9621"
+    volumes:
+      # Data volumes (persistent storage)
+      - ./data/rag_storage:/app/data/rag_storage
+      - ./data/inputs:/app/data/inputs
+      - ./data/tiktoken:/app/data/tiktoken
+      
+      # Configuration files
+      - ./config.ini:/app/config.ini
+      - ./.env:/app/.env
+      
+      # NOTE: Code is NOT mounted - uses image version
+      # To update code: push to GitHub → CI/CD builds new image → pull & restart
+      
+    env_file:
+      - .env
+    environment:
+      - TIKTOKEN_CACHE_DIR=/app/data/tiktoken
+    restart: unless-stopped
+    # Connect to existing lightrag-postgres container
+    external_links:
+      - lightrag-postgres:lightrag-postgres
+    network_mode: bridge
