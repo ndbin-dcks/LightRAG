@@ -594,6 +594,7 @@ def create_app(args):
         rag = LightRAG(
             working_dir=args.working_dir,
             workspace=args.workspace,
+            enable_hierarchical=True,
             llm_model_func=create_llm_model_func(args.llm_binding),
             llm_model_name=args.llm_model,
             llm_model_max_async=args.max_async,
