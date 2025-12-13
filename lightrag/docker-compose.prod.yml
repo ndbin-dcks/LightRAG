@@ -1,0 +1,55 @@
+# Docker Compose - Production Mode
+# Code được baked vào Docker image từ GitHub
+# KHÔNG mount code từ host filesystem
+
+version: '3.8'
+
+services:
+  lightrag:
+    image: ghcr.io/hkuds/lightrag:latest
+    container_name: lightrag
+    ports:
+      - "9621:9621"
+    volumes:
+      # Data volumes (persistent storage)
+      - ./data/rag_storage:/app/data/rag_storage
+      - ./data/inputs:/app/data/inputs
+      - ./data/tiktoken:/app/data/tiktoken
+      
+      # Configuration files
+      - ./config.ini:/app/config.ini
+      - ./.env:/app/.env
+      
+      # NOTE: Code is NOT mounted - uses image version
+      # To update code: push to GitHub → CI/CD builds new image → pull & restart
+      
+    env_file:
+      - .env
+    environment:
+      - TIKTOKEN_CACHE_DIR=/app/data/tiktoken
+    restart: unless-stopped
+    depends_on:
+      - lightrag-postgres
+    networks:
+      - lightrag-network
+
+  lightrag-postgres:
+    image: postgres:16-age
+    container_name: lightrag-postgres
+    environment:
+      POSTGRES_USER: lightrag_user
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-lightrag_password}
+      POSTGRES_DB: lightrag_db
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+    networks:
+      - lightrag-network
+
+networks:
+  lightrag-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+    driver: local

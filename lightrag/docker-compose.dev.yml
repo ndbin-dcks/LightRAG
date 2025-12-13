@@ -1,0 +1,57 @@
+# Docker Compose - Development Mode
+# Code được mount từ host filesystem cho rapid development
+# Changes trong /opt/lightrag/lightrag/ có hiệu lực ngay sau restart
+
+version: '3.8'
+
+services:
+  lightrag:
+    image: ghcr.io/hkuds/lightrag:latest
+    container_name: lightrag-dev
+    ports:
+      - "9621:9621"
+    volumes:
+      # Data volumes (persistent storage)
+      - ./data/rag_storage:/app/data/rag_storage
+      - ./data/inputs:/app/data/inputs
+      - ./data/tiktoken:/app/data/tiktoken
+      
+      # Configuration files
+      - ./config.ini:/app/config.ini
+      - ./.env:/app/.env
+      
+      # CODE MOUNT - Development only! 🔧
+      # Sửa code trong /opt/lightrag/lightrag/ → restart container → có hiệu lực ngay
+      - ./lightrag:/app/lightrag:ro  # Read-only để tránh container ghi đè
+      
+    env_file:
+      - .env
+    environment:
+      - TIKTOKEN_CACHE_DIR=/app/data/tiktoken
+      - LOG_LEVEL=DEBUG  # Debug mode for development
+    restart: unless-stopped
+    depends_on:
+      - lightrag-postgres
+    networks:
+      - lightrag-network
+
+  lightrag-postgres:
+    image: postgres:16-age
+    container_name: lightrag-postgres
+    environment:
+      POSTGRES_USER: lightrag_user
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-lightrag_password}
+      POSTGRES_DB: lightrag_db
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+    networks:
+      - lightrag-network
+
+networks:
+  lightrag-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+    driver: local
